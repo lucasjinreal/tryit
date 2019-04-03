@@ -1,0 +1,5 @@
+/media/jintain/wd/weapons/tryit/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/media/jintain/wd/weapons/tryit/cmake-build-debug/CMakeFiles/edit_cache.dir
+/media/jintain/wd/weapons/tryit/cmake-build-debug/CMakeFiles/a.dir
+/media/jintain/wd/weapons/tryit/cmake-build-debug/CMakeFiles/pcd_read.dir
+/media/jintain/wd/weapons/tryit/cmake-build-debug/CMakeFiles/example.dir
