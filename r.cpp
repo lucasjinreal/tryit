@@ -1,10 +1,10 @@
 // #include "opencv/opencv.hpp"
-#include "opencv4/opencv2/opencv.hpp"
-#include "opencv4/opencv2/core.hpp"
-#include "opencv4/opencv2/video.hpp"
-#include "opencv4/opencv2/videoio.hpp"
-#include "opencv4/opencv2/video.hpp"
-#include "opencv4/opencv2/videoio.hpp"
+#include "opencv2/opencv.hpp"
+#include "opencv2/core.hpp"
+#include "opencv2/video.hpp"
+#include "opencv2/videoio.hpp"
+#include "opencv2/video.hpp"
+#include "opencv2/videoio.hpp"
 
 
 #include "thor/os.h"
