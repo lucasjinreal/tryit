@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 project(pcd_read)
 
+add_definitions("-std=c++11")
+
 # find_package(PCL REQUIRED)
 find_package(OpenCV REQUIRED)
 if (NOT OpenCV_FOUND)
@@ -14,6 +16,9 @@ include_directories(include)
 find_library(NDT_OMP
 NAMES ndt_omp 
     HINTS "./libs")
+
+
+link_directories(/usr/local/lib)
 
 # include_directories(${PCL_INCLUDE_DIRS})
 # link_directories(${PCL_LIBRARY_DIRS})
@@ -37,3 +42,7 @@ target_link_libraries(r ${PCL_LIBRARIES} ${OpenCV_LIBS} -lthor)
 
 add_executable(a a.cpp)
 target_link_libraries(a ${OpenCV_LIBS} -lglog)
+
+
+add_executable(yaml y.cpp)
+target_link_libraries(yaml yaml-cpp -lglog)
