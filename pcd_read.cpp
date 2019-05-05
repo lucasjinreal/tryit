@@ -1,10 +1,39 @@
 #include <iostream>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
-// #include <pcl_visualization/cloud_viewer.h>
 #include <pcl/visualization/cloud_viewer.h>
+#include <pclomp/ndt_omp.h>
+
+#include "opencv2/opencv.hpp"
+#include "opencv2/core.hpp"
+#include "opencv2/imgproc.hpp"
+
+using namespace cv;
+
 
 using namespace std;
+
+
+// align point clouds and measure processing time
+pcl::PointCloud<pcl::PointXYZ>::Ptr align(pcl::Registration<pcl::PointXYZ, pcl::PointXYZ>::Ptr registration, const pcl::PointCloud<pcl::PointXYZ>::Ptr& target_cloud, const pcl::PointCloud<pcl::PointXYZ>::Ptr& source_cloud ) {
+  registration->setInputTarget(target_cloud);
+  registration->setInputSource(source_cloud);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr aligned(new pcl::PointCloud<pcl::PointXYZ>());
+
+  auto t1 = cv::getTickCount();
+  registration->align(*aligned);
+  std::cout << "single : " << (cv::getTickCount() - t1)/cv::getTickFrequency() << "[msec]" << std::endl;
+
+  for(int i=0; i<10; i++) {
+    registration->align(*aligned);
+  }
+  auto t3 = cv::getTickCount();
+  std::cout << "10times: " << (cv::getTickCount() - t3)/cv::getTickFrequency() << "[msec]" << std::endl;
+  std::cout << "fitness: " << registration->getFitnessScore() << std::endl << std::endl;
+  return aligned;
+}
+
+
 
 
 int main(int argc, char **argv)
