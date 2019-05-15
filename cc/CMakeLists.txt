@@ -22,3 +22,6 @@ target_link_libraries (pc_reader ${PCL_LIBRARIES} -lthor)
 
 add_executable (xml_reader xml_read.cc)
 target_link_libraries (xml_reader -lthor -ltinyxml)
+
+add_executable (eigent eigent.cc)
+target_link_libraries (eigent -lthor)
