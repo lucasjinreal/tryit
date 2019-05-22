@@ -18,3 +18,6 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (pc_reader pc_reader.cc)
 target_link_libraries (pc_reader ${PCL_LIBRARIES} -lthor)
+
+add_executable (eigen eigen.cc)
+
