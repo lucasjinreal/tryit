@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 project(pc_reader)
 
+add_definitions('-std=c++11')
+
 find_package(PCL REQUIRED)
 find_package(OpenCV REQUIRED)
 if (NOT OpenCV_FOUND)
@@ -25,3 +27,6 @@ target_link_libraries (xml_reader -lthor -ltinyxml)
 
 add_executable (eigent eigent.cc)
 target_link_libraries (eigent -lthor)
+
+add_executable (mapt mapt.cc)
+target_link_libraries (mapt -lthor)
