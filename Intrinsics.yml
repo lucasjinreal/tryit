@@ -19,3 +19,5 @@ DistCoeff: !!opencv-matrix
    data: [0.109922, -0.262807, -0.001479, 0.002177, 0.000000]
 image_width: 640
 image_height: 480
+username: Fuck
+password: 123123
