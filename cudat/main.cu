@@ -32,4 +32,5 @@ int main(void)
     cout << "shared memory: " << devProp.sharedMemPerBlock << endl;
     cout << "max threads: " << devProp.maxThreadsPerBlock << endl;
     cout << "";
+    cout << "cuda query done.\n";
 }

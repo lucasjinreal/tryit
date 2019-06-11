@@ -12,6 +12,15 @@ if (NOT OpenCV_FOUND)
     message(STATUS "found opencv: "${OpenCV_CONFIG_PATH}"   "${OpenCV_LIBS})
 endif()
 
+find_package(Boost REQUIRED COMPONENTS system thread filesystem regex)
+if (NOT Boost_FOUND)
+  message(FATAL_ERROR "Boost not found, moca will not able to built without it.")
+endif()
+find_package(PythonLibs ${PY_VERSION} REQUIRED)
+find_package(Boost REQUIRED COMPONENTS system python)
+if (NOT Boost_FOUND)
+  message(FATAL_ERROR "Boost not found, moca will not able to built without it.")
+endif()
 
 
 include_directories(${PCL_INCLUDE_DIRS})
@@ -30,3 +39,6 @@ target_link_libraries (eigent -lthor)
 
 add_executable (mapt mapt.cc)
 target_link_libraries (mapt -lthor)
+
+add_executable (boostt boostt.cc)
+target_link_libraries (boostt -lthor ${Boost_LIBRARIES})
