@@ -17,7 +17,7 @@ if (NOT Boost_FOUND)
   message(FATAL_ERROR "Boost not found, moca will not able to built without it.")
 endif()
 find_package(PythonLibs ${PY_VERSION} REQUIRED)
-find_package(Boost REQUIRED COMPONENTS system python)
+find_package(Boost REQUIRED COMPONENTS system python3)
 if (NOT Boost_FOUND)
   message(FATAL_ERROR "Boost not found, moca will not able to built without it.")
 endif()
@@ -43,3 +43,9 @@ target_link_libraries (mapt -lthor)
 
 add_executable (boostt boostt.cc)
 target_link_libraries (boostt -lthor ${Boost_LIBRARIES})
+
+add_executable (sockett sockett.cc)
+target_link_libraries (sockett -lthor ${OpenCV_LIBS} pthread glog ${Boost_LIBRARIES})
+
+add_executable (clientt clientt.cc)
+target_link_libraries (clientt -lthor ${OpenCV_LIBS} pthread glog)
