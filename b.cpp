@@ -8,16 +8,21 @@ using namespace std;
 using namespace google;
 using namespace cv;
 
+namespace RUN_MODE
+{
+  enum RUN_MODE {
+  FLOAT32 = 0,
+  FLOAT16 = 1,
+  INT8 = 2,
+};
+} // namespace RUN_MODE
 
 
 int main()
 {
 
-   uint16_t a = 1.234;
-   cout << a << endl;
-   printf("%u", a);
-   uint16_t b = 0.355;
-   cout << a + b << endl;
-   printf("%hu", a+b);
+  int a = RUN_MODE::INT8;
+  cout << a << endl;
+
   return 0;
 }

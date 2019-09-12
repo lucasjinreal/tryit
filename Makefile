@@ -14,10 +14,10 @@ PCL = -lpcl_io -lpcl_visualization -lpcl_common -lpcl_features
 VTK = -I/usr/local/include/vtk -lvtkCommonCore-8.1
 BOOST = -lboost_regex -lboost_system
 GLOG = -lglog
-LIBS = $(OPENCV) $(THOR) $(PCL) $(VTK) $(BOOST) $(GLOG)
+LIBS = $(OPENCV) $(THOR) $(PCL) $(BOOST) $(GLOG)
 
 $(PROG):$(SRCS)
 	$(CC) $(CFLAGS) -o $(PROG) $(SRCS) $(LIBS)
 
 $(PROG2):$(SRCS2)
-	$(CC) $(CFLAGS) -o $(PROG2) $(SRCS2) $(LIBS)
+	$(CC) $(CFLAGS) -o $(PROG2) $(SRCS2)  $(OPENCV) $(THOR)
