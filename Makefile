@@ -6,6 +6,8 @@ PROG = b
 SRCS2 = a.cpp
 PROG2 = a
 
+SRCS2 = c.cpp
+PROG2 = c
 
 # based on usage, libaries can be add or remove
 OPENCV = `pkg-config opencv --cflags --libs` 
@@ -21,3 +23,6 @@ $(PROG):$(SRCS)
 
 $(PROG2):$(SRCS2)
 	$(CC) $(CFLAGS) -o $(PROG2) $(SRCS2)  $(OPENCV) $(THOR)
+
+$(PROG3):$(SRCS3)
+	$(CC) $(CFLAGS) -o $(PROG3) $(SRCS3)  $(OPENCV) $(THOR)

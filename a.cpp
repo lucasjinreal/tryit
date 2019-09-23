@@ -3,7 +3,6 @@
 #include "opencv2/core.hpp"
 #include "opencv2/video.hpp"
 #include "opencv2/videoio.hpp"
-
 #include "glog/logging.h"
 
 using namespace std;
