@@ -8,10 +8,12 @@
 #include "opencv2/video.hpp"
 #include "opencv2/videoio.hpp"
 
+#include "thor/timer.h"
+
 using namespace std;
 using namespace cv;
 using namespace google;
-
+using namespace thor;
 using namespace Eigen;
 
 int main() {
@@ -51,15 +53,36 @@ int main() {
   MatrixXf b(2, 2);
   b << 0.4, 0.3,
   0.4, 0.7;
-  cout << a << endl;
-
-  cout << b << endl;
 
   b = a.cwiseProduct(2.*b);
   cout << b << endl;
   MatrixXf c = b.exp();
   cout << c << endl;
-  cout << b.exp() << endl;
+  MatrixXf exped = b.array().exp();
+  cout << "exped:\n";
+  cout << exped << endl;
+  
+  const int nr = 10000;
+  const int nc = 5;
+  MatrixXd mat = MatrixXd::Random(nr,nc);
+  std::cout << "original:\n" << mat << std::endl;
+  int last_col = mat.cols() - 1;
+
+  thor::Timer timer(20);
+  timer.on();
+  VectorXi is_selected = (mat.col(last_col).array() > 0.3).cast<int>();
+  MatrixXd mat_sel(is_selected.sum(), mat.cols());
+  int rownew = 0;
+  for (int i = 0; i < mat.rows(); ++i) {
+    if (is_selected[i]) {       
+       mat_sel.row(rownew) = mat.row(i);
+       rownew++;
+    }
+  }
+  double cost = timer.lap();
+  cout << "cost: " << cost << endl;
+  // cout << "select:\n" << mat_sel << endl;
+  
 
   return 0;
 }
