@@ -1,5 +1,6 @@
 #include <iostream>
 #include "eigen3/Eigen/Core"
+#include "eigen3/Eigen/Dense"
 #include "eigen3/Eigen/Eigen"
 #include "eigen3/unsupported/Eigen/MatrixFunctions"
 #include "glog/logging.h"
@@ -45,21 +46,28 @@ int main() {
   cout << right_part << endl;
   cout << right_part.size() << endl;
 
-  MatrixXf a(2, 2);
-  a << 2, 3, 
-    3, 4;
-  MatrixXf b(2, 2);
-  b << 0.4, 0.3,
-  0.4, 0.7;
-  cout << a << endl;
+  MatrixXf a(4, 2);
+  a << 2, 3, 3, 4, 45, 54, 435, 54;
+  MatrixXf b(4, 2);
+  b << 0.4, 0.3, 0.4, 0.7, 0.11, 0.4, 0.5, 0.8;
+  cout << "a: \n" << a << endl;
+  cout << "b: \n" << b << endl;
 
-  cout << b << endl;
+  MatrixXf vic = b.array().exp();
+  cout << "vic: \n" << vic << endl;
+  // transpose vic
+  MatrixXf vic_t = vic.transpose();
+  cout << "vic_t: \n" << vic_t << endl;
 
-  b = a.cwiseProduct(2.*b);
-  cout << b << endl;
-  MatrixXf c = b.exp();
-  cout << c << endl;
-  cout << b.exp() << endl;
+  // solve with vic
+  ArrayXf conf = vic.col(1);
+  cout << "conf: " << conf << endl;
+
+  Eigen::ArrayXi indices(5);
+  indices << 4, 7, 0, 2, 1;
+  Eigen::Array3i cols(0, 1, 2);
+  MatrixXf selected = vic(indices, cols);
+  cout << "selected rows: " << selected << endl;
 
   return 0;
 }
