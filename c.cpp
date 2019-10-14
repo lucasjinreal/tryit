@@ -9,10 +9,12 @@
 #include "opencv2/video.hpp"
 #include "opencv2/videoio.hpp"
 
+#include "thor/timer.h"
+
 using namespace std;
 using namespace cv;
 using namespace google;
-
+using namespace thor;
 using namespace Eigen;
 
 int main() {
@@ -46,28 +48,41 @@ int main() {
   cout << right_part << endl;
   cout << right_part.size() << endl;
 
-  MatrixXf a(4, 2);
-  a << 2, 3, 3, 4, 45, 54, 435, 54;
-  MatrixXf b(4, 2);
-  b << 0.4, 0.3, 0.4, 0.7, 0.11, 0.4, 0.5, 0.8;
-  cout << "a: \n" << a << endl;
-  cout << "b: \n" << b << endl;
+  MatrixXf a(2, 2);
+  a << 2, 3, 
+    3, 4;
+  MatrixXf b(2, 2);
+  b << 0.4, 0.3,
+  0.4, 0.7;
 
-  MatrixXf vic = b.array().exp();
-  cout << "vic: \n" << vic << endl;
-  // transpose vic
-  MatrixXf vic_t = vic.transpose();
-  cout << "vic_t: \n" << vic_t << endl;
+  b = a.cwiseProduct(2.*b);
+  cout << b << endl;
+  MatrixXf c = b.exp();
+  cout << c << endl;
+  MatrixXf exped = b.array().exp();
+  cout << "exped:\n";
+  cout << exped << endl;
+  
+  const int nr = 10000;
+  const int nc = 5;
+  MatrixXd mat = MatrixXd::Random(nr,nc);
+  std::cout << "original:\n" << mat << std::endl;
+  int last_col = mat.cols() - 1;
 
-  // solve with vic
-  ArrayXf conf = vic.col(1);
-  cout << "conf: " << conf << endl;
-
-  Eigen::ArrayXi indices(5);
-  indices << 4, 7, 0, 2, 1;
-  Eigen::Array3i cols(0, 1, 2);
-  MatrixXf selected = vic(indices, cols);
-  cout << "selected rows: " << selected << endl;
-
+  thor::Timer timer(20);
+  timer.on();
+  VectorXi is_selected = (mat.col(last_col).array() > 0.3).cast<int>();
+  MatrixXd mat_sel(is_selected.sum(), mat.cols());
+  int rownew = 0;
+  for (int i = 0; i < mat.rows(); ++i) {
+    if (is_selected[i]) {       
+       mat_sel.row(rownew) = mat.row(i);
+       rownew++;
+    }
+  }
+  double cost = timer.lap();
+  cout << "cost: " << cost << endl;
+  // cout << "select:\n" << mat_sel << endl;
+  
   return 0;
 }
