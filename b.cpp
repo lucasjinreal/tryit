@@ -3,6 +3,7 @@
 #include "glog/logging.h"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
+#include <cmath>
 
 using namespace std;
 using namespace google;
@@ -49,5 +50,12 @@ int main()
   Detection d1 = result[99];
   cout << d1.bbox[0] << " " << d1.bbox[1] << " cls_prob: " << d1.class_id << " " << d1.prob << endl;
 
+  int INPUT_W = 1023;
+  int step = 34;
+  int aaa = ceil(INPUT_W / step);
+  cout << aaa << endl;
+
+  float bb = exp(2.3);
+  cout << bb << endl;
   return 0;
 }

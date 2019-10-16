@@ -83,6 +83,15 @@ int main() {
   double cost = timer.lap();
   cout << "cost: " << cost << endl;
   // cout << "select:\n" << mat_sel << endl;
+
+  vector<float> a_v = {
+    0.34, 0.45, 0.45,
+    34, 54, 45
+  };
+  // convert vector to matrix
+  MatrixXf a_mat = Eigen::Map<Eigen::Matrix<float, 2, 3, RowMajor>>(a_v.data());
+  cout << a_mat << endl;
+
   
   return 0;
 }
