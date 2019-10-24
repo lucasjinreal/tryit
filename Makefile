@@ -19,7 +19,7 @@ GLOG = -lglog
 LIBS = $(OPENCV) $(THOR) $(PCL) $(BOOST) $(GLOG)
 
 $(PROG):$(SRCS)
-	$(CC) $(CFLAGS) -o $(PROG) $(SRCS) $(LIBS)
+	$(CC) $(CFLAGS) -o $(PROG) $(SRCS) $(OPENCV) $(THOR)
 
 $(PROG2):$(SRCS2)
 	$(CC) $(CFLAGS) -o $(PROG2) $(SRCS2)  $(OPENCV) $(THOR)

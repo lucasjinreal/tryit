@@ -18,7 +18,7 @@ int main(){
   }
   cap.set(CAP_PROP_POS_FRAMES, 60);
   while(1){
- 
+
     Mat frame;
     cap >> frame;
   

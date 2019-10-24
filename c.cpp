@@ -92,6 +92,10 @@ int main() {
   MatrixXf a_mat = Eigen::Map<Eigen::Matrix<float, 2, 3, RowMajor>>(a_v.data());
   cout << a_mat << endl;
 
-  
+  int width = 456;
+  float nnn[2] = {0.8, (float) (width * -0.5)};
+  // float nnn[2] = {0.8, 456 * -0.5};
+  cout << nnn <<endl;
+
   return 0;
 }
