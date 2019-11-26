@@ -1,13 +1,17 @@
 CC = g++
 CFLAGS = -g -Wall -std=c++11
-SRCS = b.cpp
-PROG = b
 
-SRCS2 = a.cpp
-PROG2 = a
 
-SRCS2 = c.cpp
-PROG2 = c
+PROG1 = main1
+PROG2 = main2
+PROG3 = main3
+PROG4 = main4
+
+SRCS1 = a.cpp
+SRCS2 = b.cpp
+SRCS3 = c.cpp
+SRCS4 = d.cpp
+
 
 # based on usage, libaries can be add or remove
 OPENCV = `pkg-config opencv --cflags --libs` 
@@ -18,11 +22,14 @@ BOOST = -lboost_regex -lboost_system
 GLOG = -lglog
 LIBS = $(OPENCV) $(THOR) $(PCL) $(BOOST) $(GLOG)
 
-$(PROG):$(SRCS)
-	$(CC) $(CFLAGS) -o $(PROG) $(SRCS) $(OPENCV) $(THOR)
+$(PROG1):$(SRCS1)
+	$(CC) $(CFLAGS) -o $(PROG1) $(SRCS1) $(OPENCV) $(THOR)
 
 $(PROG2):$(SRCS2)
 	$(CC) $(CFLAGS) -o $(PROG2) $(SRCS2)  $(OPENCV) $(THOR)
 
 $(PROG3):$(SRCS3)
 	$(CC) $(CFLAGS) -o $(PROG3) $(SRCS3)  $(OPENCV) $(THOR)
+
+$(PROG4):$(SRCS4)
+	$(CC) $(CFLAGS) -o $(PROG4) $(SRCS4)  $(OPENCV) $(THOR)
