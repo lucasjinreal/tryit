@@ -3,7 +3,6 @@
 #include "opencv2/core.hpp"
 #include "opencv2/video.hpp"
 #include "opencv2/videoio.hpp"
-
 #include "glog/logging.h"
 
 using namespace std;
@@ -19,7 +18,7 @@ int main(){
   }
   cap.set(CAP_PROP_POS_FRAMES, 60);
   while(1){
- 
+
     Mat frame;
     cap >> frame;
   
