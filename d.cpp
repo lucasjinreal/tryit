@@ -11,22 +11,35 @@ using namespace std;
 using namespace google;
 using namespace cv;
 
-typedef std::unordered_multimap<std::string,std::string> string_map;
 
+template<typename T>
+using string_map = std::unordered_multimap<std::string, T>;
+
+
+struct alignas(float) Detection
+{
+  float bbox[4];
+  int class_id;
+  float prob;
+  // float landmark[10];
+};
 
 int main()
 {
 
   // test string_map
-  string_map first;
+  string_map<Detection> first;
+  Detection d{{3, 4, 5, 6}, 1, 0.8};
+  Detection d2{{3, 4, 56, 6}, 7, 0.8};
   first = {
-    {"apple", "red"},
-    {"banana", "yellow"}
+    {"apple", d},
+    {"banana", d2}
   };
 
   for (auto &elm: first) {
-    cout << elm.first << ": " << elm.second << endl;
+    cout << elm.first << ": " << elm.second.prob << endl;
   }
+  cout << first.count("apple") << endl;
 
   return 0;
 }
