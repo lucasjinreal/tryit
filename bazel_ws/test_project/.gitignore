@@ -1,1 +1,3 @@
-bazel*/
+bazel*/bazel-bin/
+bazel-genfiles/
+bazel-genfiles

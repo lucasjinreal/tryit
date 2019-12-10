@@ -2,3 +2,5 @@ build/
 .vscode/
 cmake-build-debug/
 main*
+.idea/
+.vscode/
