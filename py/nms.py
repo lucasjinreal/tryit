@@ -68,6 +68,38 @@ def multi_label_nms(boxes, scores, iou_thresh):
     return keep_t[:num_keep]
 
 
+def multi_label2(boxes, iou_thresh):
+    # assume boxes already sorted with score
+    areas = (boxes[:, 2] - boxes[:, 0]) * (boxes[:, 3] - boxes[:, 1])
+    n_dets = boxes.shape[0]
+    mask = np.zeros([n_dets])
+    keep = np.zeros([n_dets])
+    num_keep = 0
+    for i in range(n_dets):
+        if mask[i] == 1:
+            continue
+        keep[num_keep] = i
+        num_keep += 1
+        iarea =areas[i]
+        ix1 = boxes[i][0]
+        iy1 = boxes[i][1]
+        ix2 = boxes[i][2]
+        iy2 = boxes[i][3]
+
+        for j in range(n_dets):
+            xx1 = max(ix1, boxes[j][0])
+            yy1 = max(iy1, boxes[j][1])
+            xx2 = min(ix2, boxes[j][2])
+            yy2 = min(iy2, boxes[j][3])
+            w = max(0, xx2-xx1)
+            h = max(0, yy2-yy1)
+            jarea = areas[j]
+            inter = w*h
+            ovr = inter / (iarea + jarea - inter)
+            if ovr > iou_thresh:
+                mask[j] = 1
+    return keep
+
 def test():
     model = TinyModel().to(device)
     rois = torch.rand(99, 4).to(device)
@@ -88,8 +120,15 @@ def test():
     rois = rois.cpu().numpy()
     scores = scores.cpu().numpy()
     out_me = multi_label_nms(rois, scores, 0.2)
-    print(out_me)
-    print(out_me.shape)
+    print('out me: ', out_me)
+
+    # make box sorted by score
+    order = np.argsort(scores)[::-1]
+    print('order: ', order)
+    rois = rois[order]
+    print('rois: ', rois)
+    out_me2 = multi_label2(rois, 0.2)
+    print(out_me2)
 
     # out_pt = sorted(out_pt)
     print(out_pt - out_me)
