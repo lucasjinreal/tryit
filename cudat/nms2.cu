@@ -9,6 +9,10 @@
 #include <iostream>
 #include <math.h>
 
+#include "thrust/sort.h"
+#include <thrust/device_vector.h>
+#include <thrust/system/cuda/detail/cub/device/device_radix_sort.cuh>
+
 
 
 // Hard-coded maximum. Increase if needed.
@@ -169,20 +173,66 @@ int main(void)
   float iou_threshold = 0.2;
   // copy data to gpu
   std::cout << sizeof(dets) << std::endl;
+  std::cout << sizeof(scores) << std::endl;
 
   float *dev_dets, *dev_scores;
-  cudaMalloc((void **) &dev_dets, sizeof(dets));
-  std::cout << "cuda malloced.\n";
+  int *dev_indices;
+  cudaError_t err = cudaSuccess;
+  err = cudaMalloc((void **)&dev_scores, sizeof(scores));
+  err = cudaMalloc((void **)&dev_dets, sizeof(dets));
+  err = cudaMalloc((void **)&dev_indices, (sizeof(scores)/sizeof(float))*sizeof(int));
+  if (err != cudaSuccess) {
+    printf("cudaMalloc failed!");
+    return 1;
+  }
+  cudaMemcpy(dev_dets, dets, sizeof(dets), cudaMemcpyHostToDevice);
+  cudaMemcpy(dev_scores, scores, sizeof(scores), cudaMemcpyHostToDevice);
+  std::cout << "copied data to GPU.\n";
 
-  // get back copied cuda data
-  float *host_dets;
-  cudaMemcpy(host_dets, dev_dets, sizeof(dets), cudaMemcpyDeviceToHost);
+  // DEBUG: get back copied cuda data
+  float host_dets[sizeof(dets)/sizeof(float)];
+  float host_scores[6];
+  cudaMemcpy(&host_dets, dev_dets, sizeof(dets), cudaMemcpyDeviceToHost);
+  cudaMemcpy(&host_scores, dev_scores, sizeof(scores), cudaMemcpyDeviceToHost);
   std::cout << "copied from cuda back to host.\n";
+  std::cout << "host_dets size: " << sizeof(host_dets) << std::endl;
   for (int i=0;i<sizeof(dets)/sizeof(float);i++) {
     std::cout << host_dets[i] << " ";
   }
+  std::cout << std::endl;
+  for (int i=0;i<sizeof(scores)/sizeof(float);i++) {
+    std::cout << static_cast<float>(host_scores[i]) << " ";
+  }
+  std::cout << std::endl;
 
+  // let's try sort scores using thrust
+  // ----------------------- Method 1 ---------------------------------
+  thrust::device_vector<int> sorted_indices(sizeof(scores)/sizeof(float));
+  thrust::sequence(sorted_indices.begin(), sorted_indices.end(), 0);
+  thrust::sort_by_key(thrust::device, dev_scores, dev_scores+sizeof(scores)/sizeof(float), sorted_indices.begin());
+  printf("sorted done.\n");
+  cudaMemcpy(&host_scores, dev_scores, sizeof(scores), cudaMemcpyDeviceToHost);
+  for (int i=0;i<sizeof(scores)/sizeof(float);i++) {
+    std::cout << static_cast<float>(host_scores[i]) << " ";
+  }
+  std::cout << std::endl;
+  for(auto index: sorted_indices) {
+    std::cout << index << " ";
+  }
+  std::cout << std::endl;
+  
+  // Determine temporary device storage requirements
+  // void     *d_temp_storage = NULL;
+  // size_t   temp_storage_bytes = 0;
+  // thrust::cuda_cub::cub::DeviceRadixSort::SortPairsDescending(d_temp_storage, temp_storage_bytes,
+  // )
+  
 
-  // auto indices = nms_cuda(dets, scores, iou_threshold);
-  // std::cout << indices << std::endl;
+  // nms_cuda()
+
+  cudaFree(dev_dets);
+  cudaFree(dev_scores);
+
+  std::cout << "done.\n";
+
 }
