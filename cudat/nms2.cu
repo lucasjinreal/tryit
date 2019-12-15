@@ -10,6 +10,7 @@
 #include <math.h>
 
 #include "thrust/sort.h"
+#include <thrust/gather.h>
 #include <thrust/device_vector.h>
 #include <thrust/system/cuda/detail/cub/device/device_radix_sort.cuh>
 
@@ -109,18 +110,16 @@ scores is [5]
 
 //   int dets_num = dets.size(0);
 //   const int col_blocks = ATenCeilDiv(static_cast<int64_t>(dets_num), static_cast<int64_t>(threadsPerBlock));
-
+//   std::cout << "col_blocks: " << col_blocks << std::endl;
 //   at::Tensor mask =
 //       at::empty({dets_num * col_blocks}, dets.options().dtype(at::kLong));
 //   // make mask gpu located memory
-  
 
 //   dim3 blocks(col_blocks, col_blocks);
 //   dim3 threads(threadsPerBlock);
 //   cudaStream_t stream = at::cuda::getCurrentCUDAStream();
   
 //   auto scalar_t = dets_sorted.type();
-
 //   // not support f16 for now
 //   nms_kernel<float><<<blocks, threads, 0, stream>>>(
 //     dets_num,
@@ -134,7 +133,6 @@ scores is [5]
 
 //   std::vector<unsigned long long> remv(col_blocks);
 //   memset(&remv[0], 0, sizeof(unsigned long long) * col_blocks);
-
 //   at::Tensor keep =
 //       at::empty({dets_num}, dets.options().dtype(at::kLong).device(at::kCPU));
 //   int64_t* keep_out = keep.data_ptr<int64_t>();
@@ -175,7 +173,8 @@ int main(void)
   std::cout << sizeof(dets) << std::endl;
   std::cout << sizeof(scores) << std::endl;
 
-  float *dev_dets, *dev_scores;
+  float4 *dev_dets;
+  float *dev_scores;
   int *dev_indices;
   cudaError_t err = cudaSuccess;
   err = cudaMalloc((void **)&dev_scores, sizeof(scores));
@@ -190,7 +189,8 @@ int main(void)
   std::cout << "copied data to GPU.\n";
 
   // DEBUG: get back copied cuda data
-  float host_dets[sizeof(dets)/sizeof(float)];
+  // we using float4 contain box
+  float host_dets[sizeof(dets)/(sizeof(float))];
   float host_scores[6];
   cudaMemcpy(&host_dets, dev_dets, sizeof(dets), cudaMemcpyDeviceToHost);
   cudaMemcpy(&host_scores, dev_scores, sizeof(scores), cudaMemcpyDeviceToHost);
@@ -220,7 +220,7 @@ int main(void)
     std::cout << index << " ";
   }
   std::cout << std::endl;
-  
+
   // Determine temporary device storage requirements
   // void     *d_temp_storage = NULL;
   // size_t   temp_storage_bytes = 0;
@@ -228,11 +228,29 @@ int main(void)
   // )
   
 
-  // nms_cuda()
+  // let's gather dev_dets by sorted_indices
+  // float4 *dev_sorted_dets;
+  int NUM_DETS = sizeof(dets)/(sizeof(float)*4);
+  thrust::device_vector<float4> dev_dets_sorted(NUM_DETS);
+  thrust::device_vector<float4> dev_dets_v(dev_dets, dev_dets + NUM_DETS);
+  thrust::gather(sorted_indices.begin(), sorted_indices.end(), dev_dets_v.begin(), dev_dets_sorted.begin());
+  printf("gather dets done.\n");
+  // look if dets sorted or not
+  // cudaMemcpy(&host_dets, dev_dets_sorted.begin(), sizeof(dets), cudaMemcpyDeviceToHost);
+  // for (int i=0;i<sizeof(dets)/sizeof(float);i++) {
+  //   std::cout << static_cast<float>(host_dets[i]) << " ";
+  // }
+  for (auto a: dev_dets_sorted) {
+    // std::cout << a.x << " " << a.y << " " << a.z << " " << a.w << std::endl;
+    // std::cout << a << " ";
+  }
+  std::cout << std::endl;
 
+
+  // nms_cuda()
   cudaFree(dev_dets);
   cudaFree(dev_scores);
-
+  // cudaFree(dev_sorted_dets);
   std::cout << "done.\n";
-
+  return 0;
 }
