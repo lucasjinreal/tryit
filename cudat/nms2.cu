@@ -119,6 +119,7 @@ scores is [5]
 //   dim3 threads(threadsPerBlock);
 //   cudaStream_t stream = at::cuda::getCurrentCUDAStream();
   
+//   // we only need dets_sorted
 //   auto scalar_t = dets_sorted.type();
 //   // not support f16 for now
 //   nms_kernel<float><<<blocks, threads, 0, stream>>>(
@@ -154,6 +155,15 @@ scores is [5]
 //       {keep.narrow(/*dim=*/0, /*start=*/0, /*length=*/num_to_keep)
 //            .to(order_t.device(), keep.scalar_type())});
 // }
+
+
+
+std::ostream &operator<<(std::ostream &os, const float4 &x)
+{
+  os << x.x << ", " << x.y << ", " << x.z << ", " << x.w;
+  return os;
+}
+
 
 
 int main(void)
@@ -241,8 +251,8 @@ int main(void)
   //   std::cout << static_cast<float>(host_dets[i]) << " ";
   // }
   for (auto a: dev_dets_sorted) {
-    // std::cout << a.x << " " << a.y << " " << a.z << " " << a.w << std::endl;
-    // std::cout << a << " ";
+    // std::cout << a.x << " " << a.y << " " << << " " << a.w << std::endl;
+    std::cout << a << std::endl;
   }
   std::cout << std::endl;
 

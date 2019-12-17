@@ -26,46 +26,36 @@ def multi_label_nms(boxes, scores, iou_thresh):
     # [99, 4], [99]
     if boxes.shape[0] == 0:
         return []
-    
     areas = (boxes[:, 2] - boxes[:, 0]) * (boxes[:, 3] - boxes[:, 1])
     order = np.argsort(scores)[::-1]
-
     ndets = boxes.shape[0]
     suppressed_t = np.zeros([ndets])
-    # keep_t = np.zeros([ndets])
-    keep_t = np.zeros([ndets])
-
-    num_keep = 0
+    keep_mask = np.zeros([ndets])
     for i_ in range(ndets):
         i = order[i_]
-        if suppressed_t[i] == 1:
-            continue
-        keep_t[num_keep] = i
-        num_keep += 1
+        if suppressed_t[i] != 1:
+            keep_mask[i] = 1
+            ix1 = boxes[i][0]
+            iy1 = boxes[i][1]
+            ix2 = boxes[i][2]
+            iy2 = boxes[i][3]
+            iarea = areas[i]
 
-        ix1 = boxes[i][0]
-        iy1 = boxes[i][1]
-        ix2 = boxes[i][2]
-        iy2 = boxes[i][3]
-        iarea = areas[i]
+            for j_ in range(ndets):
+                j = order[j_]
+                if suppressed_t[j] != 1:
+                    xx1 = max(ix1, boxes[j][0])
+                    yy1 = max(iy1, boxes[j][1])
+                    xx2 = min(ix2, boxes[j][2])
+                    yy2 = min(iy2, boxes[j][3])
+                    w = max(0, xx2-xx1)
+                    h = max(0, yy2-yy1)
 
-        for j_ in range(ndets):
-            j = order[j_]
-            if suppressed_t[j]  == 1:
-                continue
-            xx1 = max(ix1, boxes[j][0])
-            yy1 = max(iy1, boxes[j][1])
-            xx2 = min(ix2, boxes[j][2])
-            yy2 = min(iy2, boxes[j][3])
-
-            w = max(0, xx2-xx1)
-            h = max(0, yy2-yy1)
-
-            inter = w*h
-            ovr = inter / (iarea + areas[j] - inter)
-            if ovr > iou_thresh:
-                suppressed_t[j] = 1
-    return keep_t[:num_keep]
+                    inter = w*h
+                    ovr = inter / (iarea + areas[j] - inter)
+                    if ovr > iou_thresh:
+                        suppressed_t[j] = 1
+    return [a for i, a in enumerate(order) if keep_mask[a]]
 
 
 def multi_label2(boxes, iou_thresh):
@@ -122,13 +112,13 @@ def test():
     out_me = multi_label_nms(rois, scores, 0.2)
     print('out me: ', out_me)
 
-    # make box sorted by score
-    order = np.argsort(scores)[::-1]
-    print('order: ', order)
-    rois = rois[order]
-    print('rois: ', rois)
-    out_me2 = multi_label2(rois, 0.2)
-    print(out_me2)
+    # # make box sorted by score
+    # order = np.argsort(scores)[::-1]
+    # print('order: ', order)
+    # rois = rois[order]
+    # print('rois: ', rois)
+    # out_me2 = multi_label2(rois, 0.2)
+    # print(out_me2)
 
     # out_pt = sorted(out_pt)
     print(out_pt - out_me)
