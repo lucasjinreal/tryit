@@ -2,10 +2,10 @@ CC = g++
 CFLAGS = -g -Wall -std=c++11
 
 
-PROG1 = main1
-PROG2 = main2
-PROG3 = main3
-PROG4 = main4
+PROG1 = a
+PROG2 = b
+PROG3 = c
+PROG4 = d
 
 SRCS1 = a.cpp
 SRCS2 = b.cpp
