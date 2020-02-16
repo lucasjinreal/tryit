@@ -5,3 +5,8 @@ main*
 .idea/
 .vscode/
 .idea/
+a
+b
+c
+d
+*.dSYM/
