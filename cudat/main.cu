@@ -22,6 +22,12 @@ void sigmoid(int n, float *in, float* out) {
 }
 
 
+__global__
+void threshold(int n, float* in, float *out) {
+    
+}
+
+
 int main() {
 
     int N = 1<<20;
