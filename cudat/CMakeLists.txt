@@ -6,8 +6,11 @@ enable_language(CUDA)
 set(CMAKE_CXX_STANDARD 14)
 add_definitions("-std=c++14")
 
+file(GLOB COMMON common.h common.cpp)
+
+
 find_package(CUDA QUIET REQUIRED)
-set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS}" "-DCUDA_HAS_FP16=1 -D__CUDA_NO_HALF_OPERATORS__" )
+set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS}" "-DCUDA_HAS_FP16=1 -D__CUDA_NO_HALF_OPERATORS__")
 
 cuda_include_directories(${CUDNN_INCLUDE_DIR} ${TENSORRT_INCLUDE_DIR})
 include_directories(include
@@ -15,7 +18,7 @@ include_directories(include
         ${CUDNN_INCLUDE_DIR})
 
 find_package(OpenCV REQUIRED)
- 
+
 # find libtorch
 #set(CMAKE_PREFIX_PATH $ENV{HOME}/libtorch)
 #link_directories($ENV{HOME}/libtorch/lib)
@@ -27,7 +30,7 @@ find_package(OpenCV REQUIRED)
 
 
 cuda_add_executable(
-    main
+        main
         main.cu)
 
 # cuda_add_executable(
@@ -41,10 +44,10 @@ cuda_add_executable(
 # )
 
 cuda_add_executable(
-   nmsss
+        nmsss
         nms2.cu
 )
 target_link_libraries(
-    nmsss
-   ${OpenCV_LIBS}
+        nmsss
+        ${OpenCV_LIBS}
 )

@@ -3,6 +3,7 @@
 #include "opencv2/core.hpp"
 #include "opencv2/video.hpp"
 #include "opencv2/videoio.hpp"
+#include "opencv2/cudawarping.hpp"
 #include "glog/logging.h"
 
 #include "thor/os.h"
@@ -43,6 +44,8 @@ int main(int argc, char** argv){
     if (frame.empty())
       break;
  
+    Mat frameHalf;
+    // cv::cuda::resize()
     imshow( "Frame", frame );
  
     char c=(char)waitKey(25);
