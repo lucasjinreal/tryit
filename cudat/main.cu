@@ -24,7 +24,9 @@ void sigmoid(int n, float *in, float* out) {
 
 __global__
 void threshold(int n, float* in, float *out) {
-    
+    for(int i=0; i<n;i++) {
+        out[i] = in[i] > 0.5 ? 1: 0;
+    }
 }
 
 
