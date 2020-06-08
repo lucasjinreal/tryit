@@ -15,21 +15,22 @@ using namespace google;
  
 int main(int argc, char** argv){
   
-  vector<string> extensions = {".jpg", ".png", ".jpeg"};
-  vector<cv::String> all_image_files;
-  for (auto e: extensions) {
-    vector<cv::String> tmp;
-    string image_file_ptn = thor::os::join(argv[1], "*" + e);
-    cout << image_file_ptn << endl;
-    glob(image_file_ptn, tmp);
-    all_image_files.insert(all_image_files.end(), tmp.begin(), tmp.end());
-  }
-  for (auto a: all_image_files) {
-    cout << a << endl;
-  }
+  // vector<string> extensions = {".jpg", ".png", ".jpeg"};
+  // vector<cv::String> all_image_files;
+  // for (auto e: extensions) {
+  //   vector<cv::String> tmp;
+  //   string image_file_ptn = thor::os::join(argv[1], "*" + e);
+  //   cout << image_file_ptn << endl;
+  //   glob(image_file_ptn, tmp);
+  //   all_image_files.insert(all_image_files.end(), tmp.begin(), tmp.end());
+  // }
+  // for (auto a: all_image_files) {
+  //   cout << a << endl;
+  // }
 
 
-  VideoCapture cap(0); 
+  string data_f = argv[1];
+  VideoCapture cap(data_f); 
   if(!cap.isOpened()){
     cout << "Error opening video stream or file" << endl;
     return -1;
