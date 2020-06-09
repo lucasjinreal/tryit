@@ -6,6 +6,25 @@
 
 using namespace std;
 
+#ifndef BLOCK
+#define BLOCK 512
+#endif
+
+dim3 cudaGridSize(uint n)
+{
+    uint k = (n - 1) /BLOCK + 1;
+    uint x = k ;
+    uint y = 1 ;
+    if (x > 65535 )
+    {
+        x = ceil(sqrt(x));
+        y = (n - 1 )/(x*BLOCK) + 1;
+    }
+    dim3 d = {x,y,1} ;
+    return d;
+}
+
+
 __global__
 void add(int n, float *x, float *y) {
     for (int i=0; i<n;i++) {
@@ -21,6 +40,24 @@ void sigmoid(int n, float *in, float* out) {
     }
 }
 
+__global__
+void testKernel(int *times, int *out) {
+    int idx = blockDim.x * blockIdx.x + threadIdx.x;
+    out++;
+    printf("%d ", idx);
+}
+
+
+__global__ void printThreadIndex() {
+    int ix = threadIdx.x + blockIdx.x * blockDim.x;
+    int iy = threadIdx.y + blockIdx.y * blockDim.y;
+    unsigned int idx = iy*blockDim.x * gridDim.x + ix; 
+    printf("thread_id (%d,%d) block_id (%d,%d) coordinate (%d, %d), global index %2d \n", 
+            threadIdx.x, threadIdx.y, blockIdx.x, blockIdx.y, ix, iy, idx);
+}
+
+__device__ float Logist(float data){ return 1./(1. + exp(-data)); }
+
 
 __global__
 void threshold(int n, float* in, float *out) {
@@ -29,8 +66,24 @@ void threshold(int n, float* in, float *out) {
     }
 }
 
+__global__
+void matrixKernel(float *matrix, float *out, int c, int h, int w) {
+    // doing a quick matrix multiply on a 80x244x244
+    // doing matrix sigmoid on all matrix
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= h*w ) return;
 
-int main() {
+    for(int cls=0; cls<c;cls++) {
+        float mm = matrix[cls*w*h + idx];
+        float a = Logist(mm);
+        out[cls*w*h + idx] = a;
+        // printf("%f %f\n", mm, a);
+    }
+    
+}
+
+
+void test1() {
 
     int N = 1<<20;
     float *x, *y;
@@ -68,5 +121,40 @@ int main() {
     cudaDeviceSynchronize();
 
     cout << logits[0] << endl;
-    
+}
+
+void test2() {
+    float *m_fea;
+    int c=80, w=224, h =244;
+    int N = c*w*h;
+    printf("%d\n", N);
+    cudaMallocManaged(&m_fea, N*sizeof(float));
+    for(int i=0;i<N;i++) {
+        m_fea[i] = 1.2f;
+    }
+    printf("%f %f %f \n", m_fea[0], m_fea[1], m_fea[2]);
+    matrixKernel<<< w, h>>>(m_fea, m_fea, c, h, w);
+    cudaDeviceSynchronize();
+
+    printf("%f %f %f \n", m_fea[0], m_fea[1], m_fea[2]);
+}
+
+
+void test3() {
+    dim3 grid(3, 2, 1);
+    dim3 block(5, 3, 1);
+    int *tt;
+    cudaMallocManaged(&tt, 1*sizeof(int));
+    tt = 0;
+    // testKernel<<<grid, block>>>(tt, tt);
+    printThreadIndex<<<grid, block>>>();
+    // testKernel<<<2, 2>>>(tt, tt);
+    cudaDeviceSynchronize();
+    // why got 0 when access data from it?? core dumped acutally
+    printf("\n%d\n", tt[0]);
+}
+
+int main() {
+    test3();
+    // test2();
 }

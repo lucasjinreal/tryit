@@ -17,7 +17,7 @@ include_directories(include
         ${CUDA_INCLUDE_DIRS}
         ${CUDNN_INCLUDE_DIR})
 
-find_package(OpenCV REQUIRED)
+find_package(OpenCV 4 REQUIRED)
 
 # find libtorch
 #set(CMAKE_PREFIX_PATH $ENV{HOME}/libtorch)
