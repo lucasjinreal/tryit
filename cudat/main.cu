@@ -67,6 +67,11 @@ void threshold(int n, float* in, float *out) {
 }
 
 __global__
+void selectCandidates(float* in, float* out, float thresh, int shift) {
+    // in is cx,cy,w,h,l,c,
+}
+
+__global__
 void matrixKernel(float *matrix, float *out, int c, int h, int w) {
     // doing a quick matrix multiply on a 80x244x244
     // doing matrix sigmoid on all matrix
@@ -154,7 +159,31 @@ void test3() {
     printf("\n%d\n", tt[0]);
 }
 
+void test4() {
+    // 
+    float* a;
+    size_t s = 10890;
+    cudaMallocManaged(&a, s*sizeof(float));
+    for (int i=0; i< s;i++) {
+        a[i] = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+    }
+    for(int i=0;i<30;i++) {
+        printf("%f ", a[i]);
+    }
+    // a is a memory block of random floats
+    dim3 blockSize(8);
+    dim3 gridSize(s);
+    std::cout << blockSize ;
+    std::cout << gridSize ;
+    // 执行kernele
+    selectCandidates << < gridSize, blockSize >> >(a, d_y, d_z, N);
+
+    // select out these bigger than 0.1
+
+}
+
 int main() {
-    test3();
+    test4();
+    // test3();
     // test2();
 }

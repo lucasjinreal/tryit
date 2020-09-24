@@ -31,21 +31,11 @@ void infer(vector<Detection> *det_res) {
 
 int main() {
   // test string_map
-  string_map<Detection> first;
-  Detection d{{3, 4, 5, 6}, 1, 0.8};
-  Detection d2{{3, 4, 56, 6}, 7, 0.8};
-  first = {{"apple", d}, {"banana", d2}};
-
-  for (auto &elm : first) {
-    cout << elm.first << ": " << elm.second.prob << endl;
-  }
-  cout << first.count("apple") << endl;
-
-
-  vector<Detection> res;
-  infer(&res);
-
-  cout << res.size() << endl;
+  vector<float> oneData = {34., 4., 4., 5., 45, 54, 54};
+  vector<vector<float>> indata;
+  indata.push_back(oneData);
+  cout << indata.size() << endl;
+  assert(oneData.size() == 8);
 
   return 0;
 }

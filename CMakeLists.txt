@@ -31,11 +31,11 @@ else()
   message(FATAL_ERROR "can not found PCL 1.8+ version.")
 endif()
 
-add_executable (pcd_read pcd_read.cpp)
-target_link_libraries (pcd_read ${PCL_LIBRARIES}  ${OpenCV_LIBS})
+# add_executable (pcd_read pcd_read.cpp)
+# target_link_libraries (pcd_read ${PCL_LIBRARIES}  ${OpenCV_LIBS})
 
-add_executable(r r.cpp)
-target_link_libraries(r ${PCL_LIBRARIES} ${OpenCV_LIBS} -lthor)
+# add_executable(r r.cpp)
+# target_link_libraries(r ${PCL_LIBRARIES} ${OpenCV_LIBS} -lthor)
 
 add_executable(a a.cpp)
 target_link_libraries(a ${OpenCV_LIBS} -lglog -lthor)
