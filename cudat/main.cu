@@ -66,10 +66,7 @@ void threshold(int n, float* in, float *out) {
     }
 }
 
-__global__
-void selectCandidates(float* in, float* out, float thresh, int shift) {
-    // in is cx,cy,w,h,l,c,
-}
+
 
 __global__
 void matrixKernel(float *matrix, float *out, int c, int h, int w) {
@@ -159,24 +156,40 @@ void test3() {
     printf("\n%d\n", tt[0]);
 }
 
+
+__global__
+void selectCandidates(float* in, float* out, float thresh, int shift) {
+    // in is cx,cy,w,h,l,c,
+    int ix = threadIdx.x + blockIdx.x;
+}
+
 void test4() {
     // 
-    float* a;
-    size_t s = 10890;
-    cudaMallocManaged(&a, s*sizeof(float));
+    float* b;
+    int s = 10890;
+    cudaMallocManaged(&b, s*sizeof(float));
+    std::cout << "print...\n";
     for (int i=0; i< s;i++) {
-        a[i] = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+        // a[i] = rand() % 1000 / (float)(1001);
+        b[i] = 0.6f;
+        printf("%f", b[i]);
     }
+    // a里面是s个随机的值
     for(int i=0;i<30;i++) {
-        printf("%f ", a[i]);
+        printf("%f ", b[i]);
     }
     // a is a memory block of random floats
+    // 我现在想把a里面大于threshold的值拿出来
+    // 用CUDA来做，怎么把值拿到？
     dim3 blockSize(8);
-    dim3 gridSize(s);
-    std::cout << blockSize ;
-    std::cout << gridSize ;
-    // 执行kernele
-    selectCandidates << < gridSize, blockSize >> >(a, d_y, d_z, N);
+    dim3 threadSize(s);
+    std::cout << blockSize.x;
+    std::cout << threadSize.x;
+    // 执行kernel
+    float* y;
+    cudaMallocManaged(&y, s*sizeof(float));
+
+    selectCandidates << < threadSize, blockSize >> >(b, y, 0.5, s);
 
     // select out these bigger than 0.1
 
