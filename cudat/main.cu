@@ -69,6 +69,7 @@ void threshold(int n, float* in, float *out) {
 __global__
 void selectCandidates(float* in, float* out, float thresh, int shift) {
     // in is cx,cy,w,h,l,c,
+    // how to set out since we do not know how many elements out after kernel
 }
 
 __global__
