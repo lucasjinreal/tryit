@@ -66,11 +66,6 @@ void threshold(int n, float* in, float *out) {
     }
 }
 
-__global__
-void selectCandidates(float* in, float* out, float thresh, int shift) {
-    // in is cx,cy,w,h,l,c,
-    // how to set out since we do not know how many elements out after kernel
-}
 
 __global__
 void matrixKernel(float *matrix, float *out, int c, int h, int w) {
@@ -160,28 +155,61 @@ void test3() {
     printf("\n%d\n", tt[0]);
 }
 
+
+__global__
+void selectCandidates(float* in, float* out, float thresh, int shift, int* count) {
+    // in is cx,cy,w,h,l,c,
+    int idx = threadIdx.x + blockIdx.x;
+    float v = in[idx];
+    if (v > thresh) {
+        // why count value doesn't changed
+        // unsigned int my_d_count = atomicAdd(count, (int)1);
+        atomicAdd(count, (int)1);
+        // printf("add 1 now count: %d \n", count);
+        // printf("add 1 now count:  \n");
+        printf("d_count before atomic increment: my_d_count: %d, now: %d \n", 1, count); 
+        out[*count] = v;
+    }
+}
+
 void test4() {
     // 
-    float* a;
-    size_t s = 10890;
-    cudaMallocManaged(&a, s*sizeof(float));
+    float* b;
+    int s = 10890;
+    cudaMallocManaged(&b, s*sizeof(float));
+    std::cout << "print...\n";
     for (int i=0; i< s;i++) {
-        a[i] = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+        b[i] = rand() % 1000 / (float)(1001);
+        // b[i] = 0.6f;
+        // printf("%f", b[i]);
     }
+    // a里面是s个随机的值
     for(int i=0;i<30;i++) {
-        printf("%f ", a[i]);
+        printf("%f ", b[i]);
     }
     // a is a memory block of random floats
-    dim3 blockSize(8);
-    dim3 gridSize(s);
-    std::cout << blockSize ;
-    std::cout << gridSize ;
-    // 执行kernele
-    selectCandidates << < gridSize, blockSize >> >(a, d_y, d_z, N);
+    // 我现在想把a里面大于threshold的值拿出来
+    // 用CUDA来做，怎么把值拿到？
+    dim3 blockSize(512);
+    dim3 threadSize(s/512);
+    std::cout << blockSize.x;
+    std::cout << threadSize.x;
+    // 执行kernel
+    float* y;
+    cudaMallocManaged(&y, s*sizeof(float));
+    int* count;
+    int t = 0;
+    count = &t;
+
+    selectCandidates << < threadSize, blockSize >> >(b, y, 0.5, s, count);
 
     // select out these bigger than 0.1
+    cudaDeviceSynchronize();
 
+    std::cout << "\nresult: \n";
+    std::cout << "count: " << *count << std::endl;
 }
+
 
 int main() {
     test4();
