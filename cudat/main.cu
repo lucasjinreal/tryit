@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <ctime>
 
 using namespace std;
 
@@ -170,6 +171,8 @@ void selectCandidates(float* in, float* out, float thresh, int shift, int* count
 }
 
 void test4() {
+    srand ( time(NULL) );
+
     // 
     float* b;
     int s = 10890;
@@ -210,9 +213,9 @@ void test4() {
     std::cout << "\nresult: \n";
     std::cout << "count: " << *count << " allcount: " << *all_count << std::endl;
 
-    for(int i=0;i<*count;i++) {
-        printf("%f ", y[i]);
-    }
+    // for(int i=0;i<*count;i++) {
+    //     printf("%f ", y[i]);
+    // }
 }
 
 
