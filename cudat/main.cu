@@ -157,18 +157,15 @@ void test3() {
 
 
 __global__
-void selectCandidates(float* in, float* out, float thresh, int shift, int* count) {
+void selectCandidates(float* in, float* out, float thresh, int shift, int* count, int* all_count) {
     // in is cx,cy,w,h,l,c,
     int idx = threadIdx.x + blockIdx.x;
     float v = in[idx];
+    atomicAdd(all_count, (int)1);
+
     if (v > thresh) {
-        // why count value doesn't changed
-        // unsigned int my_d_count = atomicAdd(count, (int)1);
-        atomicAdd(count, (int)1);
-        // printf("add 1 now count: %d \n", count);
-        // printf("add 1 now count:  \n");
-        printf("d_count before atomic increment: my_d_count: %d, now: %d \n", 1, count); 
-        out[*count] = v;
+        unsigned int my_d_count = atomicAdd(count, (int)1);
+        out[my_d_count] = v;
     }
 }
 
@@ -190,24 +187,32 @@ void test4() {
     // a is a memory block of random floats
     // 我现在想把a里面大于threshold的值拿出来
     // 用CUDA来做，怎么把值拿到？
-    dim3 blockSize(512);
-    dim3 threadSize(s/512);
+    dim3 blockSize(10);
+    dim3 threadSize(s/10);
     std::cout << blockSize.x;
     std::cout << threadSize.x;
     // 执行kernel
     float* y;
     cudaMallocManaged(&y, s*sizeof(float));
     int* count;
-    int t = 0;
-    count = &t;
+    cudaMallocManaged(&count, sizeof(int));
+    *count = 0;
 
-    selectCandidates << < threadSize, blockSize >> >(b, y, 0.5, s, count);
+    int* all_count;
+    cudaMallocManaged(&all_count, sizeof(int));
+    *all_count = 0;
+
+    selectCandidates << < threadSize, blockSize >> >(b, y, 0.5, s, count, all_count);
 
     // select out these bigger than 0.1
     cudaDeviceSynchronize();
 
     std::cout << "\nresult: \n";
-    std::cout << "count: " << *count << std::endl;
+    std::cout << "count: " << *count << " allcount: " << *all_count << std::endl;
+
+    for(int i=0;i<*count;i++) {
+        printf("%f ", y[i]);
+    }
 }
 
 
