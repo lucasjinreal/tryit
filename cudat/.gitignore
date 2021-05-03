@@ -1,3 +1,6 @@
 build/
 main
 !main.cu
+cv_test
+CMakeFiles/
+nmss

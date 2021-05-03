@@ -33,15 +33,15 @@ cuda_add_executable(
         main
         main.cu)
 
-# cuda_add_executable(
-#    nms
-#        nms_test.cu
-# )
-# target_link_libraries(
-#    nms
-#    ${TORCH_LIBRARIES}
-#    ${OpenCV_LIBS}
-# )
+cuda_add_executable(
+   cv_test
+   cv_test.cu
+)
+
+target_link_libraries(
+        cv_test
+   ${OpenCV_LIBS}
+)
 
 cuda_add_executable(
         nmsss
