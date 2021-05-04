@@ -14,17 +14,17 @@
 int main() {
 
     // cv::Mat image = cv::imread("../images/lanes/town01191.jpg");
-    // cv::imshow("aaa", image);
-    // cv::waitKey(0);
+    // // cv::imshow("aaa", image);
+    // // cv::waitKey(0);
 
     // cv::Mat img_float(image.rows, image.cols, CV_32FC3);
     // image.convertTo(img_float, CV_32FC3);
     // float* imgGpuPtr;
-    // cudaMalloc(&imgGpuPtr, image.rows*image.cols*3);
+    // cudaMalloc(&imgGpuPtr, image.rows*image.cols*3*sizeof(float));
 
     // cv::cuda::GpuMat imgGpuSrc;
     // cv::cuda::GpuMat imgGpu(image.rows, image.cols, CV_32FC3, 
-    //     imgGpuPtr, image.cols*3);
+    //     imgGpuPtr, image.cols*3*sizeof(float));
     // imgGpuSrc.upload(img_float);
     // imgGpuSrc.convertTo(imgGpuSrc, CV_32FC3);
     // imgGpuSrc.copyTo(imgGpu);
@@ -53,8 +53,7 @@ int main() {
     //ptr used to download result image from device
     // uint8_t *deviceInp;
     //ptr hold resized image in device memory
-    uint8_t *resized_gpu_ptr;
-    float* resized_gpu_float_ptr;
+    float *resized_gpu_ptr;
     cv::Mat left, downloadedLeft;
     cv::cuda::GpuMat gpuLeft;
     //resize image to 257x257 using cuda::resize
@@ -62,32 +61,29 @@ int main() {
     const int net_col = 257;
 
     float *deviceInp;
-    cudaMalloc((float **)&deviceInp, net_row*net_col*3);
+    cudaMalloc((float **)&deviceInp, net_row*net_col*3*sizeof(float));
     //malloc 257x257x3 in device memory
-    cudaMalloc(&resized_gpu_ptr, net_row*net_col*3);
-    cudaMalloc(&resized_gpu_float_ptr, net_row*net_col*3);
+    cudaMalloc(&resized_gpu_ptr, net_row*net_col*3*sizeof(float));
 
-    // cv::cuda::GpuMat gpu_resized(net_row, net_col, CV_8UC3, resized_gpu_ptr, net_col*3);
-    cv::cuda::GpuMat gpu_resized;
-    cv::cuda::GpuMat gpu_resized_float(net_row, net_col, CV_32FC3, resized_gpu_float_ptr, net_col*3);
+    cv::cuda::GpuMat gpu_resized(net_row, net_col, CV_32FC3, resized_gpu_ptr, net_col*3*sizeof(float));
 
     //read image and resize
     left = cv::imread("../images/lanes/town01191.jpg");
     gpuLeft.upload(left);
-    cv::cuda::resize(gpuLeft, gpu_resized, cv::Size(257, 257));
-    gpu_resized.convertTo(gpu_resized_float, CV_32FC3);
+    cv::cuda::GpuMat tmp;
+    gpuLeft.convertTo(tmp, CV_32FC3);
+    cv::cuda::resize(tmp, gpu_resized, cv::Size(257, 257));
 
     //do process in tensorrt
-    cudaMemcpy(deviceInp, resized_gpu_float_ptr,
-            net_row*net_col*3, cudaMemcpyDeviceToDevice);
+    cudaMemcpy(deviceInp, resized_gpu_ptr,
+            net_row*net_col*3*sizeof(float), cudaMemcpyDeviceToDevice);
             
-    // cv::cuda::GpuMat gpuImg(net_row, net_col, CV_8UC3, deviceInp, net_col*3);
-    cv::cuda::GpuMat gpuImg(net_row, net_col, CV_32FC3, deviceInp, net_col*3);
-    cv::cuda::GpuMat gpuTmp;
-    gpuImg.convertTo(gpuTmp, CV_8UC3);
+    cv::cuda::GpuMat gpuImg(net_row, net_col, CV_32FC3, deviceInp, gpu_resized.step);
     //download 257x257x3 image to cpu memory
-    gpuTmp.download(downloadedLeft);
-    imshow ("test", downloadedLeft);
+    cv::Mat a;
+    gpuImg.download(a);
+    a.convertTo(a, CV_8UC3);
+    imshow ("test", a);
     cv::waitKey(0);
 
 
